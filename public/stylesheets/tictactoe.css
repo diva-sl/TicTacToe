@@ -1,0 +1,51 @@
+.container {
+  width: 237px;
+  height: 230px;
+  background: blue;
+  margin: 50px auto;
+  text-align: center;
+  padding: 10px;
+}
+
+.cell1 {
+  color: red;
+  font-size: 20px;
+}
+
+.win1 {
+  color: green;
+  font-size: 20px;
+}
+
+.player1 {
+  color: #000000;
+  font-size: 20px;
+}
+
+.menu {
+  background: #800080;
+  color:#FFFFFF;
+  border: 1px solid #cccccc;
+  padding: 20px;
+}
+
+table {
+  border: hidden;
+  border-collapse: collapse;
+  table-layout: fixed;
+  border-spacing: 0;
+}
+
+.td {
+  border: 2px solid #cccccc;
+  font-size: 20px;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #FFFF00;
+  width: 75px;
+  height: 75px;
+  min-width: 75px;
+  max-width: 75px;
+  min-height: 75px;
+  max-height: 75px;
+  text-align: center;
+}
