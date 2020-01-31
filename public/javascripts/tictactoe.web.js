@@ -3,7 +3,7 @@ let state;
 
 function load(p) {
   player = p;
-  initBoard();
+  initBoard(); 
   getGame()
     .then(pull);
 }
@@ -35,9 +35,11 @@ function render() {
   }
   for (var i = 0; i < 3; i++) {
     for (var j = 0; j < 3; j++) {
-      if (state[i][j] != "-") {
         var element = document.getElementById(i + ',' + j);
+      if (state[i][j] != "-") {
         element.innerHTML = state[i][j];
+      }else if(state[i][j]=='-') {
+        element.innerHTML=null;
       }
     }
   }
@@ -57,7 +59,8 @@ function pull() {
       .then(render)
       .then(whosTurn)
       .then(checkWinner)
-  }, 100);
+      // .then(showMenu)
+  }, 3000);
 }
 
 function place(x, y) {
@@ -68,10 +71,16 @@ function place(x, y) {
       'Content-Type': 'application/json'
     }
   })
-  .catch(err=> {
-    document.getElementById("msgs").innerHTML = err.message;
+  .then(res=>{
+    return res.json();
+    })
+  .then(err=>{
+    if(err!='ok'){
+    document.getElementById("msgs").innerHTML=err
+    }else{
+    document.getElementById("msgs").innerHTML=null
+    } 
   })
-  // .then(pull)
 }
 
 function whosTurn() {
@@ -94,7 +103,13 @@ function checkWinner() {
   });
 };
 
-function showMenu() {
-  restart.setAttribute("class", "menu")
-  restart.innerHTML = "RESTART GAME &raquo";
+function reload(){
+    
+    return fetch('/api/rematch');
+}
+
+function restart() {
+  reload();
+  getGame()
+  .then(pull)
 }

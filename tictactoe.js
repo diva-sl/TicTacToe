@@ -13,12 +13,22 @@ function Game() {
   }
   var result = [];
   for (var i = 0; i < 3; i++) {
-    result[i] = [];
+    result[i] = []; 
     for (var j = 0; j < 3; j++) {
       result[i][j] = '-';
     }
   }
   return {
+    reload: function() {
+        var result = [];
+      for (var i = 0; i < 3; i++) {
+         result[i] = []; 
+       for (var j = 0; j < 3; j++) {
+         result[i][j] = '-';
+       }
+      }
+    },   
+
     playTurn: function() {
       return turn;
     },
@@ -26,25 +36,25 @@ function Game() {
     //moves([[0,0]])
     //
     moves: function(arr) {
-      console.log('arrrrrr', arr);
       var k = 0;
-      if (arr[0].length == 2) {
-       console.log('2arrrrrr', arr);
-        arr[0].push(turn);
-        count[turn] += 1;
-        for (var i = 0; i < arr.length; i++) {
-          result[arr[i][0]][arr[i][1]] = arr[i][2];
-        }
-      } else if (arr[0].length == 3) {
-      console.log('3arrrrrr', arr);
-
-        for (var i = 0; i < arr.length; i++) {
-          result[arr[i][1]][arr[i][0]] = arr[i][2];
-
+      if(result[arr[0][0]][arr[0][1]]!='-'){
+        return false;
+      }
+      else if(result[arr[0][0]][arr[0][1]]=='-'){
+         if (arr[0].length == 2) {
+          arr[0].push(turn);
+          count[turn] += 1;
+          for (var i = 0; i < arr.length; i++) {
+            result[arr[i][0]][arr[i][1]] = arr[i][2];
+          }
+         }else if (arr[0].length == 3) {
+            for (var i = 0; i < arr.length; i++) {
+            result[arr[i][1]][arr[i][0]] = arr[i][2];
+          }
         }
       }
-      turn = turn === "A" ? "B" : "A"
-
+      turn = turn === "A" ? "B" : "A";
+      return true;
     },
     isEmpty: function(x, y) {
       if (result[x][y] == '-') {
