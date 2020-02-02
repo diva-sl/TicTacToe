@@ -1,15 +1,26 @@
 let player;
 let state;
+let gameid
 
-function load(p) {
+function start() {
+  fetch('/api/start')
+  .then(res=> res.json())
+  .then(url=> {
+    document.getElementById("link1").innerHTML =url[0];
+    document.getElementById("link2").innerHTML =url[1];
+  });
+}
+
+function load(p,id) {
   player = p;
+  gameid=id;
   initBoard(); 
   getGame()
-    .then(pull);
+  .then(pull);
 }
 
 function getGame() {
-  return fetch('/api/newgame');
+  return fetch('/api/newgame?id='+gameid);
 }
 
 function initBoard() {
@@ -35,7 +46,7 @@ function render() {
   }
   for (var i = 0; i < 3; i++) {
     for (var j = 0; j < 3; j++) {
-        var element = document.getElementById(i + ',' + j);
+      var element = document.getElementById(i + ',' + j);
       if (state[i][j] != "-") {
         element.innerHTML = state[i][j];
       }else if(state[i][j]=='-') {
@@ -46,25 +57,24 @@ function render() {
 }
 
 function getState() {
-  return fetch('/api/state')
-    .then(res=> res.json())
-    .then(res=> {
-      state = res;
-    });
+  return fetch('/api/state?id='+gameid)
+  .then(res=> res.json())
+  .then(res=> {
+    state = res;
+  });
 }
 
 function pull() {
   setInterval(()=> {
     getState()
-      .then(render)
-      .then(whosTurn)
-      .then(checkWinner)
-      // .then(showMenu)
-  }, 3000);
+    .then(render)
+    .then(whosTurn)
+    .then(checkWinner)
+  }, 300);
 }
 
 function place(x, y) {
-  fetch('/api/place', {
+  fetch('/api/place?id='+gameid, {
     method: 'POST',
     body: JSON.stringify([x,y]),
     headers: {
@@ -73,39 +83,45 @@ function place(x, y) {
   })
   .then(res=>{
     return res.json();
-    })
+  })
   .then(err=>{
     if(err!='ok'){
-    document.getElementById("msgs").innerHTML=err
+      document.getElementById("msgs").innerHTML=err
     }else{
-    document.getElementById("msgs").innerHTML=null
+      document.getElementById("msgs").innerHTML=null
     } 
   })
 }
 
 function whosTurn() {
-  fetch('/api/whosturn')
+  fetch('/api/whosturn?id='+gameid)
   .then(res=> res.json())
   .then(player=> {
-    document.getElementById("currentPlayer").innerHTML = player;
+
+    if(document.getElementById("winner").innerHTML == ''){
+      document.getElementById("currentPlayer").innerHTML = player;
+    }else{
+      document.getElementById("currentPlayer").innerHTML = null;
+    }
   });
 }
 
 function checkWinner() {
-  fetch('/api/winner')
+  fetch('/api/winner?id='+gameid)
   .then(res=> res.json())
   .then(winner=> {
     if (winner != undefined) {
       document.getElementById("winner").innerHTML = winner === '-' 
-        ? 'Match Draw'
-        : `Player ${winner} won the match`;
+      ? 'Match Draw'
+      : `Player ${winner} won the match`;
+      document.getElementById("currentPlayer").innerHTML = null;
     }
   });
 };
 
 function reload(){
-    
-    return fetch('/api/rematch');
+  document.getElementById("winner").innerHTML = null; 
+  return fetch('/api/rematch?id='+gameid);
 }
 
 function restart() {
@@ -113,3 +129,6 @@ function restart() {
   getGame()
   .then(pull)
 }
+
+
+//+="<br>"+ url[0] + "<br>"+"<a href='"+url[0]+"'>'"
