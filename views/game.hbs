@@ -1,17 +1,21 @@
-
-<div class="container">
-	<table class="row" id="board"></table>
-	<br>
-	<p id="msgs" class="msgs"></p>
-	<br>
-	<p id="winner" class="winner"></p>
-	<br>
-	<p id="currentPlayer" class="currentPlayer"></p>
-	<br>
-	<br> 
-	<input type="button" value="Restart" onclick="restart()"/>
+<p id = "error" class="error"></p>
+<br>
+<p id ="gameWin" class="gameWin">
+</p>
+<br>
+<div id="container" class="container">
+<table class="row" id="board"></table>
+<br>
+<p id="msgs" class="msgs"></p>
+<br>
+<p id="winner" class="winner"></p>
+<br>
+<p id="currentPlayer" class="currentPlayer"></p>
+<br>
+<br> 
+<input type="button" value="Restart" onclick="restart()"/>
 </div>
 <script src="./javascripts/tictactoe.web.js"></script>
 <script>
-	load('{{player}}','{{id}}');
+load('{{player}}','{{id}}');
 </script>

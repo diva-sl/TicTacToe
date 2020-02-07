@@ -19,29 +19,8 @@ function Game() {
     for (var j = 0; j < 3; j++) {
       result[i][j] = '-';
     }
-  }
+  } 
   return {
-    createUrl: function() {
-      var urlArr=[]; 
-      var play="B";
-      const path={
-        protocol: 'http',
-        hostname: 'localhost',
-        port:3000,
-        pathname: '/game',
-        query: {
-          player: play==="A" ? "B" : "A",
-          id: valid++
-        }
-      }
-      for(var j=0;j<2;j++){
-        urlArr.push(url.format(path));
-        path.query.player=play;
-      }
-      return urlArr;
-
-    },   
-
     playTurn: function() {
       return turn;
     },
@@ -145,29 +124,35 @@ function Game() {
     }
   },
   getWinner: function() {
+    var total = count["A"] + count["B"];
     var win = result;
     var winner;
-    for (var i = 0; i < win.length; i++) {
-      if ((win[i][0] == 'A') && (win[i][1] == 'A') && (win[i][2] == 'A')) {
-        return winner = 'A';
-      } else if ((win[i][0] == 'B') && (win[i][1] == 'B') && (win[i][2] == 'B')) {
-        return winner = 'B';
-      } else if ((win[0][i] == 'A') && (win[1][i] == 'A') && (win[2][i] == 'A')) {
-        return winner = 'A';
-      } else if ((win[0][i] == 'B') && (win[1][i] == 'B') && (win[2][i] == 'B')) {
-        return winner = 'B';
-      } else if (i == 0) {
-        if ((win[i][0] == 'A') && (win[i + 1][1] == 'A') && (win[i + 2][2] == 'A')) {
+    if (winner == undefined && total <= 9) {
+      for (var i = 0; i < win.length; i++) {
+        if ((win[i][0] == 'A') && (win[i][1] == 'A') && (win[i][2] == 'A')) {
           return winner = 'A';
-        } else if ((win[i][0] == 'B') && (win[i + 1][1] == 'B') && (win[i + 2][2] == 'B')) {
-          return winner = 'B'
-        } else if ((win[2][i] == 'A') && (win[1][i + 1] == 'A') && (win[i][2] == 'A')) {
+        } else if ((win[i][0] == 'B') && (win[i][1] == 'B') && (win[i][2] == 'B')) {
+          return winner = 'B';
+        } else if ((win[0][i] == 'A') && (win[1][i] == 'A') && (win[2][i] == 'A')) {
           return winner = 'A';
-        } else if ((win[2][i] == 'B') && (win[1][i + 1] == 'B') && (win[i][2] == 'B')) {
-          return winner = 'B'
+        } else if ((win[0][i] == 'B') && (win[1][i] == 'B') && (win[2][i] == 'B')) {
+          return winner = 'B';
+        } else if (i == 0) {
+          if ((win[i][0] == 'A') && (win[i + 1][1] == 'A') && (win[i + 2][2] == 'A')) {
+            return winner = 'A';
+          } else if ((win[i][0] == 'B') && (win[i + 1][1] == 'B') && (win[i + 2][2] == 'B')) {
+            return winner = 'B'
+          } else if ((win[2][i] == 'A') && (win[1][i + 1] == 'A') && (win[i][2] == 'A')) {
+            return winner = 'A';
+          } else if ((win[2][i] == 'B') && (win[1][i + 1] == 'B') && (win[i][2] == 'B')) {
+            return winner = 'B'
+          }else if(total==9){
+            return winner = "-";
+          }
         }
       }
     }
+
   },
   playCount: function() {
     if (count[turn] == 5) {
