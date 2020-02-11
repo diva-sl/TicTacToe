@@ -3,23 +3,22 @@ let state;
 let gameid;
 let gameIds=[];
 
-let interval;
+let interval; 
 
 
-function start() {
-  fetch('/api/start')
+function newGame() {
+  fetch('/api/newGame')
   .then(res=> res.json())
-  .then(url=> {
-    document.getElementById("link1").innerHTML ='<a target=_blank rel=noopener noreferrer href='+url[0]+'>'+url[0]+'</a>';
-    document.getElementById("link2").innerHTML ='<a target=_blank rel=noopener noreferrer href='+url[1]+'>'+url[1]+'</a>';
+  .then(urlId=> {
+    document.getElementById("link1").innerHTML ='<a target=_blank rel=noopener noreferrer href=http://localhost:3000/game?player=A&id='+urlId+'>'+'http://localhost:3000/game?player=A&id='+urlId+'</a>'
+    document.getElementById("link2").innerHTML ='<a target=_blank rel=noopener noreferrer href=http://localhost:3000/game?player=B&id='+urlId+'>'+'http://localhost:3000/game?player=B&id='+urlId+'</a>'
   })
 }
 
 
-
 function paint(){
   const tbody = document.getElementById("games");
-  fetch('/api/winners')
+  fetch('/api/scoreBoard')
   .then(res=> res.json())
   .then(x=> {
     x.forEach(obj=>{
@@ -37,27 +36,23 @@ function paint(){
       tbody.appendChild(row);
     })
   });
-}1
+}
 
 function load(p,id) {
   player = p;
   gameid=id;
   var check;
- fetch('/api/gameIds')
+ fetch('/api/gameIds?id='+gameid)
   .then(res=> res.json())
-  .then(ids=>{
-  ids.forEach(x=>{
-    if(x==id){
-      check=true;
-    }
-    });
-   if(check){
+  .then(err=>{
+   if(err =='ok'){
    document.getElementById("gameWin").innerHTML='<a target=_blank rel=noopener noreferrer href=http://localhost:3000/games >WINNERS DETAILS</a>'
    initBoard();
    getGame()
    .then(pull);
-     }else{
-       document.getElementById("error").innerText="This Game Id "+ gameid +" Never create.";
+     }
+  else{
+       document.getElementById("error").innerText=err;
        document.getElementById("gameWin").innerHTML='<a href=http://localhost:3000/newGame>NEW GAME</a>'
        document.getElementById("container").style.display="none";
      }
@@ -65,7 +60,7 @@ function load(p,id) {
 }
 
 function getGame() {
-  return fetch('/api/newgame?id='+gameid);
+  return fetch('/api/loadGame?id='+gameid);
 }
 
 function initBoard() {
@@ -115,7 +110,7 @@ function pull() {
     .then(whosTurn)
     .then(checkWinner)
     .then(paint)
-  }, 300);
+  }, 3000);
 }
 
 function place(x, y) {

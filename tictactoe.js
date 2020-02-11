@@ -1,5 +1,4 @@
 
-
 function Game() {
   var count = {
     'A': 0,
@@ -37,8 +36,9 @@ function Game() {
           result[arr[i][0]][arr[i][1]] = arr[i][2];
         }
       }else if (arr[0].length == 3) {
+        count[turn] +=1;
         for (var i = 0; i < arr.length; i++) {
-          result[arr[i][1]][arr[i][0]] = arr[i][2];
+          result[arr[i][0]][arr[i][1]] = arr[i][2];
         }
       }
     }

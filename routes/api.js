@@ -1,89 +1,88 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const url = require('url');
-var Game = require('../tictactoe');
-    
-let gameid;
+const Game = require('../tictactoe');
+const DB=require('../DB'); 
 
-let enterIds=[];
-	 
-
-let gameWinner=[];
-let valid=1001;
-
-function createUrl() {
-	var urlArr=[]; 
-	var play="B";
-	const path={
-		protocol: 'http',
-		hostname: 'localhost',
-		port:3000,
-		pathname: '/game',
-		query: {
-			player: play==="A" ? "B" : "A",
-			id: valid++
-		}
-	}
-	for(var j=0;j<2;j++){
-		urlArr.push(url.format(path));
-		path.query.player=play;
-	}
-	enterIds.push(path.query.id);
-	return urlArr;
-}
-
-var id;
-var game;
-var games = {};
+let game;
+let games = {};
 
 
-router.get('/start',(req,res)=>{
+router.get('/newGame',(req,res)=>{
 	res.writeHead(200,{
 		'Content-Type':'application/json'
 	})
-	res.end(JSON.stringify(createUrl()));
+	var newId=DB.nextId();
+	if(games[newId]==undefined) {
+		games[newId] = new Game();
+		DB.gameNew(newId);
+	}
+	res.end(JSON.stringify(newId));
 })
 
 router.get('/gameIds',(req,res)=>{
-    res.writeHead(200,{
-		'Content-Type':'application/json'
-	})
-	console.log(enterIds);
-	res.end(JSON.stringify(enterIds));
-})
-
-router.get('/newgame', (req,res) => {
-		if(games[req.query.id]==undefined) {
-		games[req.query.id] = new Game();
-   }
-	res.end('ok'); 
-});
-router.get('/rematch',(req,res) => {
-	if(games[req.query.id]!=undefined){
-		games[req.query.id]=undefined;
+	
+	if(DB.gameIds(req.query.id)){
+		res.writeHead(200,{
+			'Content-Type':'application/json'
+		})
+		res.end(JSON.stringify('ok'));
 	}
-	res.end('ok');
+	else{
+		res.writeHead(404, {
+			'Content-Type': 'application/json'
+		});
+		res.end(JSON.stringify('Game Not Found'));
+	}	
+
 })
 
-router.get('/winners',(req,res)=>{
-res.writeHead(200,{
+router.get('/loadGame', (req,res) => {
+	// DB.exists (game id)
+	// res with error
+	// games <- game id
+	// games [id] = DB.load(game id)
+	if(DB.exists(req.query.id)){
+		if(!games[req.query.id]){
+			games[req.query.id] = DB.load(req.query.id)
+		}
+		res.end('ok'); 
+	}else{
+		res.writeHead(404, {
+			'Content-Type': 'application/json'
+		});
+		res.end((JSON.stringify('Game Not Found')));
+	}
+});
+// router.get('/rematch',(req,res) => {
+// 	if(games[req.query.id]!=undefined){
+// 		games[req.query.id]=undefined;
+// 	}
+// 	res.end('ok');
+// })
+
+// scoreboard
+router.get('/scoreBoard',(req,res)=>{
+	res.writeHead(200,{
 		'Content-Type':'application/json'
 	})
-	res.end(JSON.stringify(gameWinner));
+	res.end(JSON.stringify(DB.winners()));
 
 })
 router.get('/state',(req,res)=>{
 	res.writeHead(200,{
 		'Content-Type':'application/json'
 	})
-	res.end(JSON.stringify(games[req.query.id].getBoard()));
+	DB.postState(req.query.id,games[req.query.id].getBoard());
+	res.end((JSON.stringify(DB.getState(req.query.id))));
 });
 
 router.get('/whosturn',(req,res)=>{
 	res.writeHead(200,{
 		'Content-Type':'application/json'
 	})
-	res.end(JSON.stringify(games[req.query.id].playTurn()));
+	DB.whosTurn(req.query.id,games[req.query.id].playTurn());
+	res.end(JSON.stringify(DB.turn(req.query.id)));
 });
 
 router.post('/place',(req,res)=> {
@@ -109,20 +108,13 @@ router.get('/exits',(req,res)=>{
 })
 
 router.get('/winner',(req,res)=>{
-    let win={}
 	res.writeHead(200,{
 		'Content-Type':'application/json'
-	})
-	if(games[req.query.id].getWinner()!=undefined){
-       if(gameid != req.query.id){
-        win.id=req.query.id;
-        gameid=req.query.id;
-	    win.player=games[req.query.id].getWinner();
-        gameWinner.push(win);
-     }
-    }
-	res.end(JSON.stringify(games[req.query.id].getWinner()));
+	});
+	DB.checkWinner(req.query.id,games[req.query.id].getWinner());
+	res.end(JSON.stringify(DB.winner(req.query.id)));
 });
+
 
 //POST /move
 //GET /state

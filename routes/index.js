@@ -14,7 +14,7 @@ router.get('/newGame', function(req, res, next) {
 router.get('/games', function(req, res, next) {
 	 res.render('games');
 });
-
+ 
 
 
 
